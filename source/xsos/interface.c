@@ -108,28 +108,34 @@ void close_ui(void)
 	return;
 }
 
-int player_turn(int* cont)
+int player_turn(int** map)
 {
 	SDL_Event ev;
+	int cont = 1;
 	
-	while (SDL_PollEvent(&ev))
+	while (cont)
 	{
-		if (ev.type == SDL_MOUSEBUTTONUP)
+		draw_ui(map);
+		
+		while (SDL_PollEvent(&ev))
 		{
-			int j = ev.button.x/(w/3);
-			int i = ev.button.y/(h/3);
-			
-			if (map[i][j] == MAP_EMPTY)
+			if (ev.type == SDL_MOUSEBUTTONUP)
 			{
-				map[i][j] = MAP_CROSS;
-				break;
+				int j = ev.button.x/(w/3);
+				int i = ev.button.y/(h/3);
+				
+				if (map[i][j] == MAP_EMPTY)
+				{
+					map[i][j] = MAP_CROSS;
+					break;
+				}
 			}
+			else if (ev.type = SDL_QUIT)
+			{
+				*cont = 0;
+				break;
+			}		
 		}
-		else if (ev.type = SDL_QUIT)
-		{
-			*cont = 0;
-			break;
-		}		
 	}
 	
 	return 1;
