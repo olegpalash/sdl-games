@@ -78,8 +78,8 @@ int ai_turn(int** map)
 			break;
 		}
 		
-		i += passes[n].di;
-		j += passes[n].dj;
+		i += passes[max].di;
+		j += passes[max].dj;
 	}
 	
 	return 1;
