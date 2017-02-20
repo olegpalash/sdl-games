@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 					puts("ИИ победил.");
 					break;
 			}
-			quit = 1;
+			break;
 		}
 		
 		ai_turn(map);
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 					puts("ИИ победил.");
 					break;
 			}
-			quit = 1;
+			break;
 		}
 	}
 	
