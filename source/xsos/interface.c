@@ -12,6 +12,15 @@ int init_ui(
 	int w,
 	int h)
 {
+	int a;
+	
+	a = SDL_Init(SDL_INIT_VIDEO);
+	if (a != 0)
+	{
+		printf("SDL error: %s\n", SDL_GetError());
+		return 0;
+	}
+	
 	win = SDL_CreateWindow(
 		"XsOs",
 		SDL_WINDOWPOS_CENTERED, 
@@ -32,7 +41,6 @@ int init_ui(
 		return 0;
 	}
 	
-	int a;
 	cross = SDL_LoadBMP("../share/game-xsos/cross.bmp");
 	if (cross == NULL)
 	{
