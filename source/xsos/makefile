@@ -9,11 +9,14 @@ $(OBJ): main.o interface.o ai.o game.o
 main.o: main.c
 	gcc -c $(CFLAGS) main.c -o main.o
 
-interface.o:
+interface.o: interface.c
 	gcc	-c $(CFLAGS) interface.c -o interface.o
 
-ai.o:
+ai.o: ai.c
 	gcc	-c $(CFLAGS) ai.c -o ai.o
 
-game.o:
+game.o: game.c
 	gcc	-c $(CFLAGS) game.c -o game.o
+
+clean:
+	rm -f *.o

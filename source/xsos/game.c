@@ -25,7 +25,7 @@ static pass passes[8] =
 	{0, 0, 1, 0},	// по вертикали
 	{0, 1, 1, 0},
 	{0, 2, 1, 0}
-}
+};
 
 /*
 	возвращаемое значение:
@@ -34,7 +34,7 @@ static pass passes[8] =
 		1 -  игрок (X)
 		2 -  ИИ (O)
 */
-int get_winner(int** map);
+int get_winner(int** map)
 {
 	int n;
 	line lines[8];
@@ -56,7 +56,7 @@ int get_winner(int** map);
 			}
 			else if (map[i][j] == MAP_CROSS)
 			{
-				lines[n].pl+;
+				lines[n].pl++;
 			}
 						
 			i += passes[n].di;
@@ -67,13 +67,16 @@ int get_winner(int** map);
 	}
 	
 	int ret = 0;
+	int fill = 1;
 	for (n = 0; n < 8; n++)
 	{
 		if (lines[n].ai == 3) ret = 2;
 		else if (lines[n].pl == 3) ret = 1;
-		else if (lines[n].sum == 3 && ret == 0) ret = -1; 
+		else if (lines[n].sum != 3) fill = 0; 
 	}
 	
+	if (fill && ret == 0) ret = -1;
+		
 	return ret;
 }
 

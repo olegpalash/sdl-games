@@ -1,4 +1,4 @@
-#include <map.h>
+#include "map.h"
 
 typedef struct
 {
@@ -18,7 +18,7 @@ static pass passes[8] =
 	{0, 0, 1, 0},	// по вертикали
 	{0, 1, 1, 0},
 	{0, 2, 1, 0}
-}
+};
 
 int ai_turn(int** map)
 {
