@@ -52,11 +52,11 @@ int get_winner(int** map);
 		{
 			if (map[i][j] == MAP_ZERO)
 			{
-				lines[n][0]++;
+				lines[n].ai++;
 			}
 			else if (map[i][j] == MAP_CROSS)
 			{
-				lines[n][1]++;
+				lines[n].pl+;
 			}
 						
 			i += passes[n].di;
