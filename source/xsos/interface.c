@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "map.h"
 
 static SDL_Surface* cross		= NULL;
 static SDL_Surface* zero		= NULL;
 static SDL_Surface* background	= NULL;
-static SDL_Surface* win1		= NULL;
-static SDL_Surface* win2		= NULL;
-static SDL_Surface* deadheat	= NULL;
+
+static TTF_Font* font			= NULL;
 
 static SDL_Window*  win			= NULL;
 static SDL_Surface* surf		= NULL;
@@ -24,6 +24,13 @@ int init_ui(
 	if (a != 0)
 	{
 		printf("SDL error: %s\n", SDL_GetError());
+		return 0;
+	}
+	
+	a = TTF_Init();
+	if (a != 0)
+	{
+		printf("SDL TTF error: %s\n", TTF_GetError());
 		return 0;
 	}
 	
@@ -47,6 +54,13 @@ int init_ui(
 		return 0;
 	}
 	
+	font = TTF_OpenFont("../share/game-xsos/sans.ttf", 72);
+	if (font == NULL)
+	{
+		printf("SDL TTF error: %s\n", TTF_GetError());
+		return 0;
+	}
+	
 	cross = load_sprite("../share/game-xsos/cross.bmp");
 	if (cross == NULL) return 0;
 
@@ -56,15 +70,6 @@ int init_ui(
 	background = load_sprite("../share/game-xsos/background.bmp");
 	if (background == NULL) return 0;
 
-	win1 = load_sprite("../share/game-xsos/win1.bmp");
-	if (win1 == NULL) return 0;
-
-	win2 = load_sprite("../share/game-xsos/win2.bmp");
-	if (win2 == NULL) return 0;
-
-	deadheat = load_sprite("../share/game-xsos/deadheat.bmp");
-	if (deadheat == NULL) return 0;
-	
 	return 1;
 }
 
@@ -160,45 +165,53 @@ int player_turn(int** map, int* quit)
 
 int show_message(int pl, int** map)
 {
+	char* text;
+	switch (pl)
+	{
+		case 0:
+			text = "Ничья";
+			break;
+		case 1:
+			text = "Вы победили!";
+			break;
+		case 2:
+			text = "Вы проиграли.";
+			break;
+		default:
+			return 0;
+	}
+	
+	SDL_Color color;
+	color.r = 255;
+	color.g = 0;
+	color.b = 0;
+	
+	SDL_Surface* rendered;
+	rendered = TTF_RenderUTF8_Solid(font, text, color);
+	if (rendered == NULL)
+	{
+		printf("SDL TTF error: %s\n", TTF_GetError());
+		return 0;
+	}
+	
 	SDL_Rect rect;
-	rect.x = 0;
-	rect.y = surf->h/3;
-	rect.w = surf->w;
-	rect.h = surf->h/3;
+	rect.w = rendered->w;
+	rect.h = rendered->h;
+	rect.x = (surf->w-rendered->w)/2;
+	rect.y = (surf->h-rendered->h)/2;
+	
 	
 	int cont = 1;
 	while (cont)
 	{
 		draw_ui(map);
 		
-		if (pl == 0)
+		int a = SDL_BlitSurface(rendered, NULL, surf, &rect);
+		if (a != 0)
 		{
-			int a = SDL_BlitScaled(deadheat, NULL, surf, &rect);
-			if (a != 0)
-			{
-				printf("SDL error: %s\n", SDL_GetError());
-				return 0;
-			}
+			printf("SDL error: %s\n", SDL_GetError());
+			return 0;
 		}
-		else if (pl == 1)
-		{
-			int a = SDL_BlitScaled(win1, NULL, surf, &rect);
-			if (a != 0)
-			{
-				printf("SDL error: %s\n", SDL_GetError());
-				return 0;
-			}
-		}
-		else if (pl == 2)
-		{
-			int a = SDL_BlitScaled(win2, NULL, surf, &rect);
-			if (a != 0)
-			{
-				printf("SDL error: %s\n", SDL_GetError());
-				return 0;
-			}
-		}
-		else return 0;
 		
 		SDL_UpdateWindowSurface(win);
 		
