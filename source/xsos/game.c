@@ -29,8 +29,8 @@ static pass passes[8] =
 
 /*
 	возвращаемое значение:
-		0 -  нет победителя
-		-1 - ничья
+		-1 -  нет победителя
+		0 - ничья
 		1 -  игрок (X)
 		2 -  ИИ (O)
 */
@@ -66,7 +66,7 @@ int get_winner(int** map)
 		lines[n].sum = lines[n].pl+lines[n].ai;
 	}
 	
-	int ret = 0;
+	int ret = -1;
 	int fill = 1;
 	for (n = 0; n < 8; n++)
 	{
@@ -75,7 +75,7 @@ int get_winner(int** map)
 		else if (lines[n].sum != 3) fill = 0; 
 	}
 	
-	if (fill && ret == 0) ret = -1;
+	if (fill && ret == -1) ret = 0;
 		
 	return ret;
 }

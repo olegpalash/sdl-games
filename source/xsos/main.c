@@ -22,44 +22,19 @@ int main(int argc, char** argv)
 	}
 	
 	int quit = 0;
+	int outcome = 0;
 	while (!quit)
 	{
 		player_turn(map, &quit);
-		if (get_winner(map) != 0)
-		{
-			switch (get_winner(map))
-			{
-				case -1:
-					puts("Ничья.");
-					break;
-				case 1:
-					puts("Вы победили.");
-					break;
-				case 2:
-					puts("ИИ победил.");
-					break;
-			}
-			break;
-		}
+		outcome = get_winner(map);
+		if (outcome != -1) break;
 		
 		ai_turn(map);
-		if (get_winner(map) != 0)
-		{
-			switch (get_winner(map))
-			{
-				case -1:
-					puts("Ничья.");
-					break;
-				case 1:
-					puts("Вы победили.");
-					break;
-				case 2:
-					puts("ИИ победил.");
-					break;
-			}
-			break;
-		}
+		outcome = get_winner(map);
+		if (outcome != -1) break;
 	}
+	
+	show_message(outcome, map);
 	
 	return 0;
 }
