@@ -42,6 +42,15 @@ int get_lines(int** map)
 						found = 1;
 					}
 				}
+				if (!found && x > 0 && y < 9)
+				{				
+					if (map[y][x] == map[y+1][x-1])
+					{
+						dx = -1;
+						dy = 1;
+						found = 1;
+					}
+				}
 				
 				
 				if (found)
@@ -52,7 +61,7 @@ int get_lines(int** map)
 					int cy = y+2*dy;
 					int len = 2;
 					
-					while (cx < 10 && cy < 10)
+					while (cx < 10 && cy < 10 && cx >= 0)
 					{
 						if (map[cy][cx] == map[st_y][st_x])
 						{
