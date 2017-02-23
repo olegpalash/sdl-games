@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include "map.h"
 
 static SDL_Surface* cross		= NULL;
@@ -34,6 +35,13 @@ int init_ui(
 		return 0;
 	}
 	
+	a = IMG_Init(IMG_INIT_PNG);
+	if (a == 0)
+	{
+		printf("SDL IMG error: %s\n", IMG_GetError());
+		return 0;
+	}
+	
 	win = SDL_CreateWindow(
 		"XsOs",
 		SDL_WINDOWPOS_CENTERED, 
@@ -61,13 +69,13 @@ int init_ui(
 		return 0;
 	}
 	
-	cross = load_sprite("../share/game-xsos/cross.bmp");
+	cross = load_sprite("../share/game-xsos/cross.png");
 	if (cross == NULL) return 0;
 
-	zero = load_sprite("../share/game-xsos/zero.bmp");
+	zero = load_sprite("../share/game-xsos/zero.png");
 	if (zero == NULL) return 0;
 
-	background = load_sprite("../share/game-xsos/background.bmp");
+	background = load_sprite("../share/game-xsos/background.png");
 	if (background == NULL) return 0;
 
 	return 1;
@@ -124,6 +132,10 @@ void close_ui(void)
 	if (zero != NULL) SDL_FreeSurface(zero);
 	
 	if (win != NULL) SDL_DestroyWindow(win);
+	
+	IMG_Quit();
+	TTF_Quit();
+	SDL_Quit();
 	return;
 }
 
@@ -238,10 +250,10 @@ static SDL_Surface* load_sprite(const char* path)
 	SDL_Surface* ret;
 	int a;
 	
-	tmp = SDL_LoadBMP(path);
+	tmp = IMG_Load(path);
 	if (tmp == NULL)
 	{
-		printf("SDL error: %s\n", SDL_GetError());
+		printf("SDL IMG error: %s\n", IMG_GetError());
 		return NULL;
 	}
 	

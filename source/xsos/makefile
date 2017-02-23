@@ -4,7 +4,7 @@ OBJ		= "../../bin/game-xsos"
 all: $(OBJ)
 
 $(OBJ): main.o interface.o ai.o game.o
-	gcc $(CFLAGS) main.o interface.o ai.o game.o `pkg-config --cflags --libs sdl2 SDL2_ttf ` -o $(OBJ)
+	gcc $(CFLAGS) main.o interface.o ai.o game.o `pkg-config --cflags --libs sdl2 SDL2_ttf SDL2_image` -o $(OBJ)
 
 main.o: main.c
 	gcc -c $(CFLAGS) main.c -o main.o
