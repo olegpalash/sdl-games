@@ -18,7 +18,7 @@ int main(void)
 	
 	add_balls(map, 3);
 	
-	int init_ui(500, 500);
+	init_ui(500, 500);
 	
 	int quit = 0;
 	int score = 0;
@@ -26,7 +26,7 @@ int main(void)
 	{
 		player_turn(map, &quit);
 		
-		int a = get_lines(map)
+		int a = get_lines(map);
 		if (a == 0)
 		{
 			if (!add_balls(map, 3))

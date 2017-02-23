@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "map.h"
 
 static SDL_Surface* balls[6]	= {NULL,NULL,NULL,NULL,NULL,NULL};
 static SDL_Surface* background	= NULL;
-static SDL_Surface* select		= NULL;
+static SDL_Surface* frame		= NULL;
 
 static TTF_Font* font			= NULL;
 
@@ -67,7 +66,7 @@ int init_ui(
 	background = load_sprite("../share/game-lines/background.bmp");
 	if (background == NULL) return 0;
 	
-	select = load_sprite("../share/game-lines/select.bmp");
+	frame = load_sprite("../share/game-lines/select.bmp");
 	if (background == NULL) return 0;
 	
 	balls[0] = load_sprite("../share/game-lines/red.bmp");
@@ -122,9 +121,9 @@ int draw_ui(int** map)
 				}
 			}
 			
-			if (selected && sel_x == x && sel_y = y)
+			if (selected && sel_x == x && sel_y == y)
 			{
-				a = SDL_BlitScaled(select, NULL, surf, &rect);
+				a = SDL_BlitScaled(frame, NULL, surf, &rect);
 				if (a != 0)
 				{
 					printf("SDL error: %s\n", SDL_GetError());
@@ -140,7 +139,7 @@ int draw_ui(int** map)
 void close_ui(void)
 {
 	if (background != NULL) SDL_FreeSurface(background);
-	if (select != NULL) SDL_FreeSurface(select);
+	if (frame != NULL) SDL_FreeSurface(frame);
 	if (balls[0] != NULL) SDL_FreeSurface(balls[0]);
 	if (balls[1] != NULL) SDL_FreeSurface(balls[1]);
 	if (balls[2] != NULL) SDL_FreeSurface(balls[2]);
