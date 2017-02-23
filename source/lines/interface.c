@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include "func.h"
 
 static SDL_Surface* balls[6]	= {NULL,NULL,NULL,NULL,NULL,NULL};
 static SDL_Surface* background	= NULL;
-static SDL_Surface* frame		= NULL;
 
 static TTF_Font* font			= NULL;
 
@@ -12,6 +13,7 @@ static SDL_Window*  win			= NULL;
 static SDL_Surface* surf		= NULL;
 
 static SDL_Surface* load_sprite(const char*);
+static int draw_frame(SDL_Rect*);
 
 static int selected = 0;
 static int sel_x, sel_y;
@@ -33,6 +35,13 @@ int init_ui(
 	if (a != 0)
 	{
 		printf("SDL TTF error: %s\n", TTF_GetError());
+		return 0;
+	}
+
+	a = IMG_Init(IMG_INIT_PNG);
+	if (a == 0)
+	{
+		printf("SDL IMG error: %s\n", IMG_GetError());
 		return 0;
 	}
 	
@@ -63,28 +72,25 @@ int init_ui(
 		return 0;
 	}
 	
-	background = load_sprite("../share/game-lines/background.bmp");
+	background = load_sprite("../share/game-lines/background.png");
 	if (background == NULL) return 0;
 	
-	frame = load_sprite("../share/game-lines/select.bmp");
-	if (background == NULL) return 0;
-	
-	balls[0] = load_sprite("../share/game-lines/red.bmp");
+	balls[0] = load_sprite("../share/game-lines/red.png");
 	if (balls[0] == NULL) return 0;
 
-	balls[1] = load_sprite("../share/game-lines/green.bmp");
+	balls[1] = load_sprite("../share/game-lines/green.png");
 	if (balls[1] == NULL) return 0;
 	
-	balls[2] = load_sprite("../share/game-lines/blue.bmp");
+	balls[2] = load_sprite("../share/game-lines/blue.png");
 	if (balls[2] == NULL) return 0;
 	
-	balls[3] = load_sprite("../share/game-lines/yellow.bmp");
+	balls[3] = load_sprite("../share/game-lines/yellow.png");
 	if (balls[3] == NULL) return 0;
 	
-	balls[4] = load_sprite("../share/game-lines/purple.bmp");
+	balls[4] = load_sprite("../share/game-lines/magenta.png");
 	if (balls[4] == NULL) return 0;
 	
-	balls[5] = load_sprite("../share/game-lines/aqua.bmp");
+	balls[5] = load_sprite("../share/game-lines/cyan.png");
 	if (balls[5] == NULL) return 0;
 
 	return 1;
@@ -123,12 +129,7 @@ int draw_ui(int** map)
 			
 			if (selected && sel_x == x && sel_y == y)
 			{
-				a = SDL_BlitScaled(frame, NULL, surf, &rect);
-				if (a != 0)
-				{
-					printf("SDL error: %s\n", SDL_GetError());
-					return 0;
-				}
+				draw_frame(&rect);
 			}
 		}
 	}
@@ -139,7 +140,6 @@ int draw_ui(int** map)
 void close_ui(void)
 {
 	if (background != NULL) SDL_FreeSurface(background);
-	if (frame != NULL) SDL_FreeSurface(frame);
 	if (balls[0] != NULL) SDL_FreeSurface(balls[0]);
 	if (balls[1] != NULL) SDL_FreeSurface(balls[1]);
 	if (balls[2] != NULL) SDL_FreeSurface(balls[2]);
@@ -148,6 +148,10 @@ void close_ui(void)
 	if (balls[5] != NULL) SDL_FreeSurface(balls[5]);
 	
 	if (win != NULL) SDL_DestroyWindow(win);
+	
+	IMG_Quit();
+	TTF_Quit();
+	SDL_Quit();
 	return;
 }
 
@@ -268,10 +272,10 @@ static SDL_Surface* load_sprite(const char* path)
 	SDL_Surface* ret;
 	int a;
 	
-	tmp = SDL_LoadBMP(path);
+	tmp = IMG_Load(path);
 	if (tmp == NULL)
 	{
-		printf("SDL error: %s\n", SDL_GetError());
+		printf("SDL IMG error: %s\n", IMG_GetError());
 		return NULL;
 	}
 	
@@ -292,5 +296,14 @@ static SDL_Surface* load_sprite(const char* path)
 	}
 	
 	return ret;
+}
+
+static int draw_frame(SDL_Rect* rect)
+{
+	Uint32 color = SDL_MapRGB(surf->format, 255, 255, 255);
+	DrawHLine(surf, color, rect->x, rect->y, rect->w);
+	DrawHLine(surf, color, rect->x, rect->y+rect->h-1, rect->w);
+	DrawVLine(surf, color, rect->x, rect->y+1, rect->h-2);
+	DrawVLine(surf, color, rect->x+rect->w-1, rect->y+1, rect->h-2);
 }
 

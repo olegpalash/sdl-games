@@ -1,9 +1,12 @@
 #include <stdlib.h>
+#include <time.h>
 #include "interface.h"
 #include "game.h"
 
 int main(void)
 {
+	srand((unsigned int) time(NULL));
+	
 	int** map = calloc(10, sizeof(int*));
 
 	int i, j;
@@ -32,6 +35,11 @@ int main(void)
 			if (!add_balls(map, 3))
 			{
 				quit = 1;
+			}
+			else
+			{
+				a = get_lines(map);
+				score += a;
 			}
 		}
 		else
