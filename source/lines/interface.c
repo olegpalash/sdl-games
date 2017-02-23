@@ -208,7 +208,7 @@ int player_turn(int** map, int* quit)
 
 int show_message(int score, int** map)
 {
-	char* text[128];
+	char text[128];
 	
 	sprintf(text, "Ваш счет: %i", score);
 
