@@ -158,52 +158,64 @@ void close_ui(void)
 int player_turn(int** map, int* quit)
 {
 	int cont = 1;
+	int redraw = 1;
 	
 	while (cont)
 	{
-		draw_ui(map);
-		SDL_UpdateWindowSurface(win);
+		if (redraw)
+		{
+			draw_ui(map);
+			SDL_UpdateWindowSurface(win);
+			redraw = 0;
+		}
 		
 		SDL_Event ev;
 		
-		while (SDL_PollEvent(&ev))
+		SDL_WaitEvent(&ev);		
+		if (ev.type == SDL_MOUSEBUTTONUP)
 		{
-			if (ev.type == SDL_MOUSEBUTTONUP)
+			int x = ev.button.x/(surf->w/10);
+			int y = ev.button.y/(surf->h/10);
+			
+			if (selected == 0)
 			{
-				int x = ev.button.x/(surf->w/10);
-				int y = ev.button.y/(surf->h/10);
-				
-				if (selected == 0)
+				if (map[y][x] != 0)
 				{
-					if (map[y][x] != 0)
-					{
-						selected = 1;
-						sel_x = x;
-						sel_y = y;
-					}
+					selected = 1;
+					sel_x = x;
+					sel_y = y;
+					redraw = 1;
+				}
+			}
+			else
+			{
+				if (map[y][x] == 0)
+				{
+					selected = 0;
+					map[y][x] = map[sel_y][sel_x];
+					map[sel_y][sel_x] = 0;
+					cont = 0;
 				}
 				else
 				{
-					if (map[y][x] == 0)
-					{
-						selected = 0;
-						map[y][x] = map[sel_y][sel_x];
-						map[sel_y][sel_x] = 0;
-						cont = 0;
-					}
-					else
-					{
-						sel_x = x;
-						sel_y = y;
-					}
+					sel_x = x;
+					sel_y = y;
+					redraw = 1;
 				}
 			}
-			else if (ev.type == SDL_QUIT)
+		}
+		else if (ev.type == SDL_QUIT)
+		{
+			cont = 0;
+			*quit = 1;
+			break;
+		}		
+		else if (ev.type == SDL_WINDOWEVENT)
+		{
+			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED)
 			{
-				cont = 0;
-				*quit = 1;
-				break;
-			}		
+				redraw = 1;
+			}
 		}
 	}
 	
@@ -236,29 +248,39 @@ int show_message(int score, int** map)
 	rect.y = (surf->h-rendered->h)/2;
 		
 	int cont = 1;
+	int redraw = 1;
 	while (cont)
 	{
-		draw_ui(map);
-		
-		int a = SDL_BlitSurface(rendered, NULL, surf, &rect);
-		if (a != 0)
+		if (redraw)
 		{
-			printf("SDL error: %s\n", SDL_GetError());
-			return 0;
-		}
+			draw_ui(map);
+			
+			int a = SDL_BlitSurface(rendered, NULL, surf, &rect);
+			if (a != 0)
+			{
+				printf("SDL error: %s\n", SDL_GetError());
+				return 0;
+			}
 		
-		SDL_UpdateWindowSurface(win);
+			SDL_UpdateWindowSurface(win);
+			redraw = 0;
+		}
 		
 		SDL_Event ev;
 		
-		while (SDL_PollEvent(&ev))
+		SDL_WaitEvent(&ev);
+		if (ev.type == SDL_MOUSEBUTTONUP ||
+			ev.type == SDL_KEYUP ||
+			ev.type == SDL_QUIT)
 		{
-			if (ev.type == SDL_MOUSEBUTTONUP ||
-				ev.type == SDL_KEYUP ||
-				ev.type == SDL_QUIT)
+			cont = 0;
+			break;
+		}
+		else if (ev.type == SDL_WINDOWEVENT)
+		{
+			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED)
 			{
-				cont = 0;
-				break;
+				redraw = 1;
 			}
 		}
 	}

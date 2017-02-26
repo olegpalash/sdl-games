@@ -143,32 +143,42 @@ int player_turn(int** map, int* quit)
 {
 	SDL_Event ev;
 	int cont = 1;
+	int redraw = 1;
 	
 	while (cont)
 	{
-		draw_ui(map);
-		SDL_UpdateWindowSurface(win);
-		
-		while (SDL_PollEvent(&ev))
+		if (redraw)
 		{
-			if (ev.type == SDL_MOUSEBUTTONUP)
+			draw_ui(map);
+			SDL_UpdateWindowSurface(win);
+			redraw = 0;
+		}
+		
+		SDL_WaitEvent(&ev);
+		if (ev.type == SDL_MOUSEBUTTONUP)
+		{
+			int j = ev.button.x/(surf->w/3);
+			int i = ev.button.y/(surf->h/3);
+			
+			if (map[i][j] == MAP_EMPTY)
 			{
-				int j = ev.button.x/(surf->w/3);
-				int i = ev.button.y/(surf->h/3);
-				
-				if (map[i][j] == MAP_EMPTY)
-				{
-					map[i][j] = MAP_CROSS;
-					cont = 0;
-					break;
-				}
-			}
-			else if (ev.type == SDL_QUIT)
-			{
+				map[i][j] = MAP_CROSS;
 				cont = 0;
-				*quit = 1;
 				break;
-			}		
+			}
+		}
+		else if (ev.type == SDL_QUIT)
+		{
+			cont = 0;
+			*quit = 1;
+			break;
+		}
+		else if (ev.type == SDL_WINDOWEVENT)
+		{
+			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED)
+			{
+				redraw = 1;
+			}
 		}
 	}
 	
@@ -212,31 +222,40 @@ int show_message(int pl, int** map)
 	rect.x = (surf->w-rendered->w)/2;
 	rect.y = (surf->h-rendered->h)/2;
 	
-	
 	int cont = 1;
+	int redraw = 1;
 	while (cont)
 	{
-		draw_ui(map);
-		
-		int a = SDL_BlitSurface(rendered, NULL, surf, &rect);
-		if (a != 0)
+		if (redraw)
 		{
-			printf("SDL error: %s\n", SDL_GetError());
-			return 0;
+			draw_ui(map);
+			
+			int a = SDL_BlitSurface(rendered, NULL, surf, &rect);
+			if (a != 0)
+			{
+				printf("SDL error: %s\n", SDL_GetError());
+				return 0;
+			}
+			
+			SDL_UpdateWindowSurface(win);
+			redraw = 0;
 		}
-		
-		SDL_UpdateWindowSurface(win);
 		
 		SDL_Event ev;
 		
-		while (SDL_PollEvent(&ev))
+		SDL_WaitEvent(&ev);
+		if (ev.type == SDL_MOUSEBUTTONUP ||
+			ev.type == SDL_KEYUP ||
+			ev.type == SDL_QUIT)
 		{
-			if (ev.type == SDL_MOUSEBUTTONUP ||
-				ev.type == SDL_KEYUP ||
-				ev.type == SDL_QUIT)
+			cont = 0;
+			break;
+		}
+		else if (ev.type == SDL_WINDOWEVENT)
+		{
+			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED)
 			{
-				cont = 0;
-				break;
+				redraw = 1;
 			}
 		}
 	}
