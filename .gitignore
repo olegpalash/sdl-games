@@ -1,4 +1,3 @@
-bin
-bin/*
+bin/game*
 source/xsos/*.o
 source/lines/*.o
