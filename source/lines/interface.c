@@ -65,7 +65,7 @@ int init_ui(
 		return 0;
 	}
 	
-	font = TTF_OpenFont("../share/game-xsos/sans.ttf", 72);
+	font = TTF_OpenFont("../share/common/sans.ttf", 72);
 	if (font == NULL)
 	{
 		printf("SDL TTF error: %s\n", TTF_GetError());
